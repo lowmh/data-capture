@@ -1,0 +1,64 @@
+.button-container {
+    margin-top: 20px;
+  }
+
+  .navigate-button {
+    background-color: #61dafb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navigate-button:hover {
+    background-color: #21a1f1;
+  }
+
+  table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: 3rem;
+    font-size: 16px;
+    text-align: left;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+  }
+  
+  thead {
+    background-color: #f4f4f4;
+  }
+  
+  thead th {
+    background-color: rgb(91,102,112);
+    color: #fff;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  th {
+    font-weight: bold;
+  }
+  
+  /* Responsive Styles */
+  @media screen and (max-width: 768px) {
+    table {
+      font-size: 14px;
+    }
+  
+    th, td {
+      padding: 8px 10px;
+    }
+  }
