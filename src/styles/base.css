@@ -19,9 +19,8 @@
   }
 
   table {
-    width: 90%;
+    width: 100%;
     border-collapse: collapse;
-    margin: 3rem;
     font-size: 16px;
     text-align: left;
   }
@@ -29,6 +28,11 @@
   th, td {
     padding: 12px 15px;
     border: 1px solid #ddd;
+  }
+
+  td{
+    max-width:1rem;
+    overflow: hidden;
   }
   
   thead {

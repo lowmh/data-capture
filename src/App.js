@@ -26,19 +26,64 @@ import OrderItemTablePage from "./pages/orderItem_table";
 // ** Mui Material
 import { Button } from "@mui/material";
 
+// ** Axios
+import axios from "axios";
+
 function Navigation({ isAuthenticated, setIsAuthenticated }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const accessCode = localStorage.getItem("accessCode");
-    if (accessCode) {
-      setIsAuthenticated(true);
-      if (location.pathname === "/login") {
-        navigate("/");
+    const refreshToken = async () => {
+      const userData = localStorage.getItem("userData");
+
+      if (userData) {
+        try {
+          const data = JSON.parse(userData);
+          const { accessToken, refreshToken } = data;
+          console.log("Current tokens:", { accessToken, refreshToken });
+
+          // Make a request to refresh the token
+          const response = await axios.post(
+            "http://localhost:30000/api/refresh-token",
+            { accessToken, refreshToken }
+          );
+
+          console.log("Refresh token response:", response);
+
+          if (response.data && response.data.accessToken) {
+            const newAccessToken = response.data.accessToken;
+            const newTokens = { accessToken: newAccessToken, refreshToken };
+
+            // Update localStorage with new tokens
+            localStorage.setItem("userData", JSON.stringify(newTokens));
+            setIsAuthenticated(true);
+
+            // Redirect to the home page if the user is on the login page
+            if (location.pathname === "/login") {
+              navigate("/");
+            }
+          } else {
+            // If no accessToken is returned, remove userData and redirect to login
+            localStorage.removeItem("userData");
+            setIsAuthenticated(false);
+            navigate("/login");
+          }
+        } catch (error) {
+          console.error("Error refreshing token:", error);
+          localStorage.removeItem("userData");
+          setIsAuthenticated(false);
+          navigate("/login");
+        }
+      } else {
+        // No userData found, redirect to login
+        setIsAuthenticated(false);
+        navigate("/login");
       }
-    }
+    };
+
+    refreshToken();
   }, [navigate, location.pathname, setIsAuthenticated]);
 
   const toggleDrawer = () => {
@@ -46,7 +91,7 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("accessCode");
+    localStorage.removeItem("userData");
     setIsAuthenticated(false);
     navigate("/login");
   };
@@ -77,6 +122,11 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
                 <li>
                   <Link to="/data-capture/barcode">
                     <Button color="inherit">Barcode scanner</Button>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/table/order">
+                    <Button color="inherit">DO table</Button>
                   </Link>
                 </li>
                 <li>

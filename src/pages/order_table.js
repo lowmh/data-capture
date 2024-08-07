@@ -1,11 +1,12 @@
 // ** React
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // ** Axios
 import axios from "axios";
 
 // ** Mui Material
-import { Grid, IconButton } from "@mui/material";
+import { Button, Grid, IconButton } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 
 // ** Format Date
@@ -33,10 +34,12 @@ function OrderTablePage() {
   const [tableData, setTableData] = useState([]);
   const [showTable, setShowTable] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:30000/api/orders");
+        const response = await axios.get(`http://localhost:30000/api/orders`);
         if (response && response.data) {
           setTableData(response.data);
           setShowTable(true);
@@ -49,11 +52,23 @@ function OrderTablePage() {
     fetchData();
   }, []);
 
+  const handleItemTable = (id) => {
+    sessionStorage.setItem("ItemId", id);
+    navigate("/table/item");
+  };
+
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} p={5}>
       <Grid item xs={12}>
         <h1>Order Table Page</h1>
         <p>This is the Order Table Page!</p>
+      </Grid>
+      <Grid item xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Link to="/">
+          <Button variant="outlined" color="inherit">
+            back
+          </Button>
+        </Link>
       </Grid>
       {showTable && (
         <Grid item xs={12}>
@@ -63,17 +78,20 @@ function OrderTablePage() {
                 <th>ID</th>
                 <th>DO Number</th>
                 <th>Created At</th>
-                <th>Action.</th>
+                <th>View</th>
               </tr>
             </thead>
             <tbody>
-              {tableData.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
+              {tableData.map((item, index) => (
+                <tr key={item.do_id}>
+                  <td>{index + 1}</td>
                   <td>{item.do_num}</td>
                   <td>{formatDate(item.created_at)}</td>
                   <td>
-                    <IconButton sx={{ fill: "rgb(91,102,112" }}>
+                    <IconButton
+                      sx={{ fill: "rgb(91,102,112" }}
+                      onClick={() => handleItemTable(item.do_id)}
+                    >
                       <Visibility /> {/* You can use a Material-UI icon here */}
                     </IconButton>
                   </td>

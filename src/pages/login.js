@@ -1,24 +1,39 @@
+// ** React
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/login.css";
-import { Card } from "@mui/material";
-import { v4 as uuidv4 } from "uuid";
 
-function LoginPage({ setAuth }) {
+// ** Styles
+import "../styles/login.css";
+
+// ** Mui Material
+import { Card } from "@mui/material";
+
+// ** Axios
+import axios from "axios";
+
+function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (username === "admin123" && password === "Admin123.") {
-      const accessCode = uuidv4();
-      localStorage.setItem("accessCode", accessCode);
-      setAuth(true);
-      navigate("/");
-    } else {
-      setError("Invalid username or password");
+    try {
+      const data = { username, password };
+      const response = await axios.post(
+        "http://localhost:30000/api/login",
+        data
+      );
+      if (response && response.data) {
+        localStorage.setItem("userData", JSON.stringify(response.data));
+        navigate("/");
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        setError(error.response.data);
+      }
+      console.error("Error fetching data:", error);
     }
   };
 

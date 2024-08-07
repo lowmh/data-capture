@@ -23,6 +23,7 @@
 }
 
 @media screen and (min-width: 889px) {
+  nav.mobile-nav,
   .App #mobile-drawer-icon {
     display: none;
   }
@@ -82,21 +83,28 @@ nav.desktop-nav ul li a:hover {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 90%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.9);
+    z-index:100;
+    background-color: rgba(255, 255, 255);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    margin: 6rem 0;
+    margin-top: 6rem;
+    transition: transform 0.3s ease;
+    transform: translateX(-0%);
+  }
+
+  .mobile-nav.open {
+    transform: translateX(100);
   }
 
   .mobile-nav ul {
     list-style-type: none;
     padding: 0;
     margin-left: 1rem;
+    width: 100%; 
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-
   }
 
   .mobile-nav ul li {
