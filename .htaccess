@@ -1,0 +1,21 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# Serve static files directly
+RewriteCond %{REQUEST_URI} ^/static/
+RewriteRule ^static/(.*)$ build/static/$1 [L]
+
+# Handle client-side routing for React
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ build/index.html [QSA,L]
+
+# Proxy API requests to the Node.js server
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.*)$ http://178.128.221.254:30000/api/$1 [P,L]
+
+# Optional: Add CORS headers if needed
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+Header always set Access-Control-Allow-Headers "X-Requested-With, Content-Type, Origin, Authorization"
