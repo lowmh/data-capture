@@ -156,6 +156,15 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
                       Barcode scanner
                     </Link>
                   </li>
+                  <li>
+                    <Button
+                      variant="outlined"
+                      color="inherit"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </li>
                 </ul>
               </nav>
             )}
