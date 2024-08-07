@@ -118,7 +118,6 @@ function QRScannerPage() {
       sku: result.sku,
       serialNum: result.serialNum,
     }));
-    console.log(jsonData);
     fetch(
       "https://phpstack-649761-4774899.cloudwaysapps.com/api/data-capture",
       {

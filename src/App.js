@@ -42,15 +42,12 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
         try {
           const data = JSON.parse(userData);
           const { accessToken, refreshToken } = data;
-          console.log("Current tokens:", { accessToken, refreshToken });
 
           // Make a request to refresh the token
           const response = await axios.post(
             "https://phpstack-649761-4774899.cloudwaysapps.com/api/refresh-token",
             { accessToken, refreshToken }
           );
-
-          console.log("Refresh token response:", response);
 
           if (response.data && response.data.accessToken) {
             const newAccessToken = response.data.accessToken;
