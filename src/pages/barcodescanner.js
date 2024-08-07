@@ -82,7 +82,7 @@ function BarcodeScannerPage() {
       serial_num: result.serialNum,
     }));
 
-    fetch("http://localhost:30000/api/data-capture", {
+    fetch("https://phpstack-649761-4774899.cloudwaysapps.com/api/datacapture", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

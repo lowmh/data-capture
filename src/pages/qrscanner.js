@@ -119,13 +119,16 @@ function QRScannerPage() {
       serialNum: result.serialNum,
     }));
     console.log(jsonData);
-    fetch("http://localhost:30000/api/data-capture", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(jsonData),
-    })
+    fetch(
+      "https://phpstack-649761-4774899.cloudwaysapps.com/api/data-capture",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jsonData),
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           return response.text().then((text) => {

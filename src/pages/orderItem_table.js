@@ -17,7 +17,7 @@ function OrderItemTablePage() {
       try {
         const id = sessionStorage.getItem("ItemId");
         const response = await axios.get(
-          `http://localhost:30000/api/items?do_id=${id}`
+          `https://phpstack-649761-4774899.cloudwaysapps.com/api/items?do_id=${id}`
         );
         if (response && response.data) {
           setTableData(response.data);
@@ -46,11 +46,13 @@ function OrderItemTablePage() {
       </Grid>
       {showTable && (
         <Grid item xs={12}>
+          <h2 style={{ textAlign: "left" }}>
+            Do number: {tableData[0].do_num}
+          </h2>
           <table>
             <thead>
               <tr>
                 <th>ID</th>
-                <th>DO Number</th>
                 <th>SKU</th>
                 <th>Serial Number</th>
               </tr>
@@ -59,7 +61,6 @@ function OrderItemTablePage() {
               {tableData.map((item, index) => (
                 <tr key={item.id}>
                   <td>{index + 1}</td>
-                  <td>{item.do_num}</td>
                   <td>{item.sku}</td>
                   <td>{item.serial_num}</td>
                 </tr>

@@ -46,7 +46,7 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
 
           // Make a request to refresh the token
           const response = await axios.post(
-            "http://localhost:30000/api/refresh-token",
+            "https://phpstack-649761-4774899.cloudwaysapps.com/api/refresh-token",
             { accessToken, refreshToken }
           );
 
