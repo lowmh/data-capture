@@ -47,7 +47,7 @@ function Navigation({ isAuthenticated, setIsAuthenticated, isLoading }) {
 
           // Make a request to refresh the token
           const response = await axios.post(
-            "https://data-capture-api-f5guf5dddsa4e4ey.southeastasia-01.azurewebsites.net/api/refresh-token",
+            "https://phpstack-649761-4774899.cloudwaysapps.com/api/refresh-token",
             { accessToken, refreshToken }
           );
 
@@ -99,7 +99,7 @@ function Navigation({ isAuthenticated, setIsAuthenticated, isLoading }) {
 
       const jsonData = JSON.parse(data);
       const response = await axios.post(
-        "https://data-capture-api-f5guf5dddsa4e4ey.southeastasia-01.azurewebsites.net/api/logout",
+        "https://phpstack-649761-4774899.cloudwaysapps.com/api/logout",
         {
           accessToken: jsonData.accessToken,
         }
@@ -269,7 +269,7 @@ function App() {
 
           // Check if access token is still valid
           const response = await axios.post(
-            "https://data-capture-api-f5guf5dddsa4e4ey.southeastasia-01.azurewebsites.net/api/refresh-token",
+            "https://phpstack-649761-4774899.cloudwaysapps.com/api/refresh-token",
             { accessToken, refreshToken }
           );
 

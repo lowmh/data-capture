@@ -111,7 +111,7 @@ function BarcodeScannerPage() {
 
     try {
       const response = await axios.post(
-        "https://data-capture-api-f5guf5dddsa4e4ey.southeastasia-01.azurewebsites.net/api/datacapture",
+        "https://phpstack-649761-4774899.cloudwaysapps.com/api/datacapture",
         jsonData,
         {
           headers: {

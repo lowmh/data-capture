@@ -17,7 +17,7 @@ function OrderItemTablePage() {
       try {
         const id = sessionStorage.getItem("ItemId");
         const response = await axios.get(
-          `https://data-capture-api-f5guf5dddsa4e4ey.southeastasia-01.azurewebsites.net/api/items?do_id=${id}`
+          `https://phpstack-649761-4774899.cloudwaysapps.com/api/items?do_id=${id}`
         );
         if (response && response.data) {
           setTableData(response.data);
