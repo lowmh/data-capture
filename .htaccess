@@ -15,3 +15,9 @@ RewriteRule ^(.*)$ build/index.html [QSA,L]
 <FilesMatch "\.(jpg|jpeg|png|gif|css|js|ico|svg)$">
   Header set Cache-Control "max-age=3600, public"
 </FilesMatch>
+
+# Disable caching for dynamic content
+<FilesMatch "\.(html|php)$">
+  Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+  Header set Pragma "no-cache"
+</FilesMatch>
