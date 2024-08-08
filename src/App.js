@@ -192,7 +192,7 @@ function Navigation({ isAuthenticated, setIsAuthenticated, isLoading }) {
                   </li>
                   <li>
                     <Link to="/table/order" onClick={toggleDrawer}>
-                      <Button color="inherit">Table</Button>
+                      Table
                     </Link>
                   </li>
                   <li>

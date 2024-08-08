@@ -1,11 +1,12 @@
 module.exports = {
   apps: [
     {
-      name: "data-capture",
+      name: "react-app",
       script: "serve",
-      args: "-s build",
+      args: "build -l 3000",
+      watch: ["build"],
       env: {
-        PORT: 3000,
+        NODE_ENV: "production",
       },
     },
   ],

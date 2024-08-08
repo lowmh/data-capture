@@ -2,7 +2,7 @@ Options -MultiViews
 RewriteEngine On
 RewriteBase /
 
-# Serve static files directly
+# Serve static files directly from the build directory
 RewriteCond %{REQUEST_URI} ^/static/
 RewriteRule ^static/(.*)$ build/static/$1 [L]
 
@@ -10,3 +10,15 @@ RewriteRule ^static/(.*)$ build/static/$1 [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ build/index.html [QSA,L]
+
+# Cache control headers for static files
+<FilesMatch "\.(html|js|css|png|jpg|jpeg|gif|ico|svg|webp)$">
+    Header set Cache-Control "max-age=31536000, public"
+</FilesMatch>
+
+# Ensure index.html is always fetched from the server
+<FilesMatch "index.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
