@@ -21,7 +21,6 @@ function OrderItemTablePage() {
           {
             headers: {
               "Cache-Control": "no-cache",
-              Pragma: "no-cache",
             },
           }
         );
