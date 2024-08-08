@@ -22,7 +22,7 @@ function LoginPage() {
     try {
       const data = { username, password };
       const response = await axios.post(
-        "https://phpstack-649761-4774899.cloudwaysapps.com/api/login",
+        "http://localhost:40000/api/login",
         data
       );
       if (response && response.data) {
@@ -30,8 +30,15 @@ function LoginPage() {
         navigate("/");
       }
     } catch (error) {
-      if (error.response.status === 400) {
-        setError(error.response.data);
+      if (error.response) {
+        // Access error response data safely
+        if (error.response.status === 400) {
+          setError(error.response.data.message || "Invalid login credentials.");
+        } else {
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } else {
+        setError("Network error. Please check your connection and try again.");
       }
       console.error("Error fetching data:", error);
     }

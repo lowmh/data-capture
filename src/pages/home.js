@@ -12,24 +12,24 @@ function HomePage() {
         <h1>EIG Hong Kong</h1>
         <p>Data Capture </p>
       </Grid>
-      <Grid item xs={12} sm={3}>
+      {/* <Grid item xs={12} sm={3}>
         <Link to="/data-capture/qr">
           <Button variant="contained" sx={{ width: "15rem", height: "3rem" }}>
             QR Scanner
           </Button>
         </Link>
-      </Grid>
+      </Grid> */}
       <Grid item xs={12} sm={3}>
         <Link to="/data-capture/barcode">
           <Button variant="contained" sx={{ width: "15rem", height: "3rem" }}>
-            Barcode Scanner
+            Data Capture
           </Button>
         </Link>
       </Grid>
       <Grid item xs={12} sm={3}>
         <Link to="/table/order">
           <Button variant="contained" sx={{ width: "15rem", height: "3rem" }}>
-            DO Number Table
+            Table
           </Button>
         </Link>
       </Grid>

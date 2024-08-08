@@ -1,4 +1,4 @@
-// ** React
+// src/App.js
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -22,6 +22,7 @@ import QrScannerPage from "./pages/qrscanner";
 import BarcodeScannerPage from "./pages/barcodescanner";
 import OrderTablePage from "./pages/order_table";
 import OrderItemTablePage from "./pages/orderItem_table";
+import LoadingPage from "./pages/loading";
 
 // ** Mui Material
 import { Button } from "@mui/material";
@@ -29,8 +30,9 @@ import { Button } from "@mui/material";
 // ** Axios
 import axios from "axios";
 
-function Navigation({ isAuthenticated, setIsAuthenticated }) {
+function Navigation({ isAuthenticated, setIsAuthenticated, isLoading }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [error, setError] = useState(""); // Define error state
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,7 +47,7 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
 
           // Make a request to refresh the token
           const response = await axios.post(
-            "https://phpstack-649761-4774899.cloudwaysapps.com/api/refresh-token",
+            "http://localhost:40000/api/refresh-token",
             { accessToken, refreshToken }
           );
 
@@ -87,17 +89,56 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
     setDrawerOpen(!drawerOpen);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("userData");
-    setIsAuthenticated(false);
-    navigate("/login");
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      const data = localStorage.getItem("userData");
+      if (!data) {
+        throw new Error("No user data found.");
+      }
+
+      const jsonData = JSON.parse(data);
+      const response = await axios.post("http://localhost:40000/api/logout", {
+        accessToken: jsonData.accessToken,
+      });
+
+      if (response.status === 200) {
+        localStorage.removeItem("userData");
+        setIsAuthenticated(false);
+        navigate("/login");
+      } else {
+        setError("An unexpected response was received.");
+      }
+    } catch (error) {
+      if (error.response) {
+        // Access error response data safely
+        if (error.response.status === 400) {
+          setError(
+            error.response.data.message || "Invalid logout credentials."
+          );
+        } else {
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } else if (error.request) {
+        // Handle network errors
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        // Handle other errors
+        setError("An error occurred. Please try again.");
+      }
+      console.error("Error fetching data:", error);
+    }
   };
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   return (
     <div className="App">
       <header className="App-header">
         <div id="mobile-drawer-icon" onClick={toggleDrawer}>
-          &#9776; {/* This is a hamburger icon */}
+          &#9776;
         </div>
         <Link to="/">
           <img src={logo} className="App-logo" alt="logo" />
@@ -112,18 +153,13 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/data-capture/qr">
-                    <Button color="inherit">QR scanner</Button>
-                  </Link>
-                </li>
-                <li>
                   <Link to="/data-capture/barcode">
-                    <Button color="inherit">Barcode scanner</Button>
+                    <Button color="inherit">Data Capture</Button>
                   </Link>
                 </li>
                 <li>
                   <Link to="/table/order">
-                    <Button color="inherit">DO table</Button>
+                    <Button color="inherit">Table</Button>
                   </Link>
                 </li>
                 <li>
@@ -147,13 +183,13 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/data-capture/qr" onClick={toggleDrawer}>
-                      QR scanner
+                    <Link to="/data-capture/barcode" onClick={toggleDrawer}>
+                      Data Capture
                     </Link>
                   </li>
                   <li>
-                    <Link to="/data-capture/barcode" onClick={toggleDrawer}>
-                      Barcode scanner
+                    <Link to="/table/order" onClick={toggleDrawer}>
+                      <Button color="inherit">Table</Button>
                     </Link>
                   </li>
                   <li>
@@ -174,7 +210,13 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
       <Routes>
         <Route
           path="/login"
-          element={<LoginPage setAuth={setIsAuthenticated} />}
+          element={
+            isAuthenticated ? (
+              <Navigate to="/" />
+            ) : (
+              <LoginPage setAuth={setIsAuthenticated} />
+            )
+          }
         />
         <Route
           path="/"
@@ -211,12 +253,48 @@ function Navigation({ isAuthenticated, setIsAuthenticated }) {
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const userData = localStorage.getItem("userData");
+
+      if (userData) {
+        try {
+          const data = JSON.parse(userData);
+          const { accessToken, refreshToken } = data;
+
+          // Check if access token is still valid
+          const response = await axios.post(
+            "http://localhost:40000/api/refresh-token",
+            { accessToken, refreshToken }
+          );
+
+          if (response.data && response.data.valid) {
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
+        } catch (error) {
+          console.error("Error verifying token:", error);
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, []);
 
   return (
     <Router>
       <Navigation
         isAuthenticated={isAuthenticated}
         setIsAuthenticated={setIsAuthenticated}
+        isLoading={isLoading}
       />
     </Router>
   );

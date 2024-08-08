@@ -11,7 +11,14 @@ import { Grid, Button, Typography } from "@mui/material";
 // ** Custom Component Import
 import CustomTextField from "../component/text-field.js";
 
+// ** Axios
+import axios from "axios";
+
 function QRScannerPage() {
+  const userData = localStorage.getItem("userData");
+  const data = JSON.parse(userData);
+  const { accessToken } = data;
+
   const [id, setId] = useState(1);
   const [doNum, setDoNum] = useState("");
   const [serialNum, setSerialNum] = useState("");
@@ -27,8 +34,15 @@ function QRScannerPage() {
 
   useEffect(() => {
     const storedData = sessionStorage.getItem("itemData");
+    const do_number = sessionStorage.getItem("do_number");
     if (storedData) {
-      setAllResults(JSON.parse(storedData));
+      const data = JSON.parse(storedData);
+      if (data.length > 0) {
+        setAllResults(data);
+      }
+    }
+    if (do_number) {
+      setDoNum(do_number || "");
     }
     if (activeInput) {
       const scanner = new Html5QrcodeScanner("reader", {
@@ -89,7 +103,6 @@ function QRScannerPage() {
     setId(id + 1);
     const result = {
       id: id,
-      doId: doNum,
       sku: sku,
       serialNum: serialNum,
     };
@@ -112,44 +125,55 @@ function QRScannerPage() {
     });
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
+    let valid = true;
+    const newErrors = { doNumber: "" };
+
+    if (!doNum) {
+      newErrors.doNumber = "DO Number is required.";
+      valid = false;
+    }
+
+    if (!valid) {
+      setErrors(newErrors);
+      return;
+    }
+
     const jsonData = allResults.map((result) => ({
-      doId: result.doId,
+      do_num: doNum,
       sku: result.sku,
-      serialNum: result.serialNum,
+      serial_num: result.serialNum,
     }));
-    fetch(
-      "https://phpstack-649761-4774899.cloudwaysapps.com/api/data-capture",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(jsonData),
+
+    try {
+      const response = await axios.post(
+        "http://localhost:40000/api/data-capture",
+        jsonData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data === "Success") {
+        alert("Data submitted successfully!");
+        handleFormClear();
+      } else {
+        // Handle unexpected responses
+        alert("Unexpected response from server: " + response.data);
       }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          return response.text().then((text) => {
-            throw new Error(text);
-          });
-        }
-        return response.text();
-      })
-      .then((data) => {
-        if (data === "Success") {
-          alert("Data submitted successfully!");
-          handleFormClear();
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("There was an error submitting the data: " + error.message);
-      });
+    } catch (error) {
+      console.error("Error:", error);
+      alert("There was an error submitting the data: " + error.message);
+    }
   };
 
   const handleFormClear = () => {
     sessionStorage.removeItem("itemData");
+    sessionStorage.removeItem("do_number");
+    setDoNum("");
     setAllResults([]);
   };
 
@@ -173,7 +197,11 @@ function QRScannerPage() {
         </Link>
       </Grid>
       <Grid item xs={12}>
-        <div id="reader" className="reader"></div>
+        <div
+          id="reader"
+          className="reader"
+          style={{ width: "100%", height: "250px" }}
+        ></div>
       </Grid>
       <Grid item xs={12} sm={3}>
         <CustomTextField
@@ -209,9 +237,6 @@ function QRScannerPage() {
         {errors.serialNumber && (
           <Typography color="error">{errors.serialNumber}</Typography>
         )}
-      </Grid>
-      <Grid item xs={12}>
-        <div id="reader" style={{ width: "100%", height: "250px" }}></div>
       </Grid>
       {allResults.length > 0 && (
         <Grid id="result-table" item xs={12} style={{ marginTop: 20 }}>

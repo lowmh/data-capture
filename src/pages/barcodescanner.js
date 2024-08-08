@@ -8,7 +8,14 @@ import { Grid, Button, Typography } from "@mui/material";
 // ** Custom Component Import
 import CustomTextField from "../component/text-field.js";
 
+// ** Axios
+import axios from "axios";
+
 function BarcodeScannerPage() {
+  const userData = localStorage.getItem("userData");
+  const data = JSON.parse(userData);
+  const { accessToken } = data;
+
   const [doNum, setDoNum] = useState("");
   const [serialNum, setSerialNum] = useState("");
   const [sku, setSku] = useState("");
@@ -22,10 +29,17 @@ function BarcodeScannerPage() {
 
   useEffect(() => {
     const storedData = sessionStorage.getItem("itemData");
+    const do_number = sessionStorage.getItem("do_number");
     if (storedData) {
-      setAllResults(JSON.parse(storedData));
+      const data = JSON.parse(storedData);
+      if (data.length > 0) {
+        setAllResults(data);
+      }
     }
-  });
+    if (do_number) {
+      setDoNum(do_number || "");
+    }
+  }, []);
 
   const handleSubmit = () => {
     let valid = true;
@@ -51,7 +65,6 @@ function BarcodeScannerPage() {
 
     const result = {
       id: id,
-      doNum: doNum,
       sku: sku,
       serialNum: serialNum,
     };
@@ -60,11 +73,12 @@ function BarcodeScannerPage() {
     setAllResults((prevResults) => {
       const updatedResults = [...prevResults, result];
       sessionStorage.setItem("itemData", JSON.stringify(updatedResults));
+      sessionStorage.setItem("do_number", doNum);
       return updatedResults;
     });
 
     setSerialNum("");
-    setErrors({ doNumber: "", sku: "", serialNumber: "" }); // Clear errors
+    setErrors({ doNumber: "", sku: "", serialNumber: "" });
   };
 
   const handleCertainRemove = (index) => () => {
@@ -75,44 +89,54 @@ function BarcodeScannerPage() {
     });
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
+    let valid = true;
+    const newErrors = { doNumber: "" };
+
+    if (!doNum) {
+      newErrors.doNumber = "DO Number is required.";
+      valid = false;
+    }
+
+    if (!valid) {
+      setErrors(newErrors);
+      return;
+    }
+
     const jsonData = allResults.map((result) => ({
-      do_num: result.doNum,
+      do_num: doNum,
       sku: result.sku,
       serial_num: result.serialNum,
     }));
 
-    fetch("https://phpstack-649761-4774899.cloudwaysapps.com/api/datacapture", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(jsonData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.text().then((text) => {
-            throw new Error(text);
-          });
+    try {
+      const response = await axios.post(
+        "http://localhost:40000/api/datacapture",
+        jsonData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
         }
-        return response.text();
-      })
-      .then((data) => {
-        if (data === "Success") {
-          alert("Data submitted successfully!");
-          handleFormClear(); // Clear results after success
-        } else {
-          alert("Unexpected response from server.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("There was an error submitting the data: " + error.message);
-      });
+      );
+
+      if (response.data === "Success") {
+        alert("Data submitted successfully!");
+        handleFormClear(); // Clear results after success
+      } else {
+        alert("Unexpected response from server.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("There was an error submitting the data: " + error.message);
+    }
   };
 
   const handleFormClear = () => {
     sessionStorage.removeItem("itemData");
+    sessionStorage.removeItem("do_number");
+    setDoNum("");
     setAllResults([]);
   };
 
@@ -131,7 +155,7 @@ function BarcodeScannerPage() {
       <Grid item xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Link style={{ color: "rgb(91,102,112,.75)" }} to="/">
           <Button variant="outlined" color="inherit">
-            back
+            Back
           </Button>
         </Link>
       </Grid>
