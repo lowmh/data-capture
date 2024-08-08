@@ -47,7 +47,7 @@ function Navigation({ isAuthenticated, setIsAuthenticated, isLoading }) {
 
           // Make a request to refresh the token
           const response = await axios.post(
-            "http://localhost:40000/api/refresh-token",
+            "https://phpstack-649761-4774899.cloudwaysapps.com/api/refresh-token",
             { accessToken, refreshToken }
           );
 
@@ -98,9 +98,12 @@ function Navigation({ isAuthenticated, setIsAuthenticated, isLoading }) {
       }
 
       const jsonData = JSON.parse(data);
-      const response = await axios.post("http://localhost:40000/api/logout", {
-        accessToken: jsonData.accessToken,
-      });
+      const response = await axios.post(
+        "https://phpstack-649761-4774899.cloudwaysapps.com/api/logout",
+        {
+          accessToken: jsonData.accessToken,
+        }
+      );
 
       if (response.status === 200) {
         localStorage.removeItem("userData");
@@ -266,7 +269,7 @@ function App() {
 
           // Check if access token is still valid
           const response = await axios.post(
-            "http://localhost:40000/api/refresh-token",
+            "https://phpstack-649761-4774899.cloudwaysapps.com/api/refresh-token",
             { accessToken, refreshToken }
           );
 

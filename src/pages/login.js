@@ -22,7 +22,7 @@ function LoginPage() {
     try {
       const data = { username, password };
       const response = await axios.post(
-        "http://localhost:40000/api/login",
+        "https://phpstack-649761-4774899.cloudwaysapps.com/api/login",
         data
       );
       if (response && response.data) {

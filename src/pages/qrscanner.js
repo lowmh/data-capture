@@ -147,7 +147,7 @@ function QRScannerPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:40000/api/data-capture",
+        "https://phpstack-649761-4774899.cloudwaysapps.com/api/data-capture",
         jsonData,
         {
           headers: {

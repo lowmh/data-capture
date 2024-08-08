@@ -39,7 +39,9 @@ function OrderTablePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:40000/api/orders`);
+        const response = await axios.get(
+          `https://phpstack-649761-4774899.cloudwaysapps.com/api/orders`
+        );
         if (response && response.data) {
           setTableData(response.data);
           setShowTable(true);
